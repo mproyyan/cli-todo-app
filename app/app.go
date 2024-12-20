@@ -191,6 +191,28 @@ func (t *Todo) ShowTodos() {
 	fmt.Println(table.String())
 }
 
+func (t *Todo) CompleteTodo(index int) {
+	// Return error if index out of range
+	if index < 0 && index > len(t.List) {
+		log.Fatal("Todo not found")
+	}
+
+	// Fetch list by index
+	list := t.List[index]
+
+	// Update todo status
+	list.Done = true
+
+	// Update todo list
+	t.List[index] = list
+
+	// Save to csv file
+	t.saveToCSV()
+
+	// Load updated todos
+	t.LoadCSV()
+}
+
 func (t *Todo) AddTodo(description string) {
 	// Create new list
 	newList := List{
