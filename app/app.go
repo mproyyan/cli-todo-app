@@ -1,6 +1,10 @@
 package app
 
-import "time"
+import (
+	"os"
+	"syscall"
+	"time"
+)
 
 type List struct {
 	Description   string
@@ -15,4 +19,12 @@ type Todo struct {
 
 func NewTodo() *Todo {
 	return &Todo{}
+}
+
+func closeFile(f *os.File) {
+	// Unlock the file
+	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
+
+	// Close the file
+	_ = f.Close()
 }
