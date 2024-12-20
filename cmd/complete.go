@@ -36,3 +36,7 @@ var completeCmd = &cobra.Command{
 		todo.CompleteTodo(listNumber - 1)
 	},
 }
+
+func init() {
+	rootCmd.AddCommand(completeCmd)
+}

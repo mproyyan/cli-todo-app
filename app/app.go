@@ -209,8 +209,8 @@ func (t *Todo) CompleteTodo(index int) {
 	// Save to csv file
 	t.saveToCSV()
 
-	// Load updated todos
-	t.LoadCSV()
+	// Load and show updated todos
+	t.ShowTodos()
 }
 
 func (t *Todo) AddTodo(description string) {
