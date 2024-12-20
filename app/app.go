@@ -273,28 +273,31 @@ func (t *Todo) DeleteTodo(index int) {
 
 func (t *Todo) ImportTodos(filePath string, mode string) {
 	importedLists := loadImportedFile(filePath)
-	uniqueLists := make(map[string]List)
+	count := make(map[string]List)
 
 	// Find unique list from existing lists
 	for _, existingList := range t.List {
 		lowerItem := strings.ToLower(existingList.Description)
-		if _, exists := uniqueLists[lowerItem]; !exists {
-			uniqueLists[lowerItem] = existingList
+		if _, exists := count[lowerItem]; !exists {
+			count[lowerItem] = existingList
 		}
 	}
 
 	// Find unique list from imported lists
 	for _, importedList := range importedLists {
 		lowerItem := strings.ToLower(importedList.Description)
-		if _, exists := uniqueLists[lowerItem]; !exists {
-			uniqueLists[lowerItem] = importedList
+		if _, exists := count[lowerItem]; !exists {
+			count[lowerItem] = importedList
 		}
 	}
 
 	// Overwrite existing lists with unique lists
-	for _, list := range uniqueLists {
-		t.List = append(t.List, list)
+	var uniqueList []List
+	for _, list := range count {
+		uniqueList = append(uniqueList, list)
 	}
+
+	t.List = uniqueList
 
 	// If mode is replace-all then replace all existing lists with imported lists
 	if mode == "replace-all" {
