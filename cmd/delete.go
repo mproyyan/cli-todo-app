@@ -36,3 +36,7 @@ var deleteCmd = &cobra.Command{
 		todo.DeleteTodo(listNumber - 1)
 	},
 }
+
+func init() {
+	rootCmd.AddCommand(deleteCmd)
+}
