@@ -355,6 +355,45 @@ func (t *Todo) exportJSON(outputPath string) {
 	}
 }
 
+func (t *Todo) exportSQL(outputPath string) {
+	// Open the file for writing
+	file, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		log.Fatal("Failed to open file :", err.Error())
+	}
+
+	defer closeFile(file)
+
+	// Create SQL commands as strings
+	createTableSQL := `
+CREATE TABLE IF NOT EXISTS todos (
+	description TEXT,
+	created_at TEXT,
+	done BOOLEAN
+);
+`
+	// Write the CREATE TABLE command
+	_, err = file.WriteString(createTableSQL)
+	if err != nil {
+		log.Fatal("Failed to write SQL syntax :", err.Error())
+	}
+
+	// Prepare INSERT statements for each List item
+	for _, item := range t.List {
+		insertSQL := `
+INSERT INTO todos (description, created_at, done) VALUES (
+	'` + item.Description + `',
+	'` + item.CreatedAt.Format(time.RFC3339) + `',
+	` + strconv.FormatBool(item.Done) + `
+);
+`
+		_, err := file.WriteString(insertSQL)
+		if err != nil {
+			log.Fatal("Failed to write SQL syntax :", err.Error())
+		}
+	}
+}
+
 func loadImportedFile(filePath string) []List {
 	// Open imported file
 	file, err := os.OpenFile(filePath, os.O_RDONLY, os.ModePerm)
