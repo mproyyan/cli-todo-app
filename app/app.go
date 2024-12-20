@@ -95,6 +95,44 @@ func (t *Todo) LoadCSV() {
 	t.List = loadedList
 }
 
+func (t *Todo) saveToCSV() {
+	// Open the file with write permissions and truncate it if it exists
+	file, err := os.OpenFile("todos.csv", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		// If file cannot be opened or created, return
+		log.Fatal("Failed to open file :", err.Error())
+	}
+
+	// Ensure the file is closed when the function exits
+	defer closeFile(file)
+
+	// Lock the file to prevent concurrent access
+	if err := syscall.Flock(int(file.Fd()), syscall.LOCK_EX); err != nil {
+		// If locking fails, return
+		log.Fatal("Failed to lock file :", err.Error())
+	}
+
+	// Create a CSV writer
+	writer := csv.NewWriter(file)
+
+	// Write each List item as a row in the CSV file
+	for _, list := range t.List {
+		// Construct row
+		row := []string{
+			list.Description,
+			list.CreatedAt.Format("02/01/2006 15:04:05"),
+			strconv.FormatBool(list.Done),
+		}
+
+		// Write to csv
+		if err := writer.Write(row); err != nil {
+			log.Fatal("Failed to write to csv file :", err.Error())
+		}
+	}
+
+	writer.Flush()
+}
+
 func closeFile(f *os.File) {
 	// Unlock the file
 	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
