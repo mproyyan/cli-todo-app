@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -337,6 +338,21 @@ func (t *Todo) exportCSV(outputPath string) {
 	}
 
 	writer.Flush()
+}
+
+func (t *Todo) exportJSON(outputPath string) {
+	file, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		log.Fatal("Failed to open file :", err.Error())
+	}
+
+	defer closeFile(file)
+
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(t.List)
+	if err != nil {
+		log.Fatal("Failed to encode Todo to JSON :", err.Error())
+	}
 }
 
 func loadImportedFile(filePath string) []List {
