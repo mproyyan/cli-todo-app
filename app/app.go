@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -267,6 +268,42 @@ func (t *Todo) DeleteTodo(index int) {
 	t.saveToCSV()
 
 	// Load and show updated todos
+	t.ShowTodos()
+}
+
+func (t *Todo) ImportTodos(filePath string, mode string) {
+	importedLists := loadImportedFile(filePath)
+	uniqueLists := make(map[string]List)
+
+	// Find unique list from existing lists
+	for _, existingList := range t.List {
+		lowerItem := strings.ToLower(existingList.Description)
+		if _, exists := uniqueLists[lowerItem]; !exists {
+			uniqueLists[lowerItem] = existingList
+		}
+	}
+
+	// Find unique list from imported lists
+	for _, importedList := range importedLists {
+		lowerItem := strings.ToLower(importedList.Description)
+		if _, exists := uniqueLists[lowerItem]; !exists {
+			uniqueLists[lowerItem] = importedList
+		}
+	}
+
+	// Overwrite existing lists with unique lists
+	for _, list := range uniqueLists {
+		t.List = append(t.List, list)
+	}
+
+	// If mode is replace-all then replace all existing lists with imported lists
+	if mode == "replace-all" {
+		t.List = importedLists
+	}
+
+	// Save updated todos to csv file
+	t.saveToCSV()
+
 	t.ShowTodos()
 }
 
