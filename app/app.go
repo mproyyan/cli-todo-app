@@ -254,6 +254,22 @@ func (t *Todo) EditTodo(index int, description string) {
 	t.ShowTodos()
 }
 
+func (t *Todo) DeleteTodo(index int) {
+	// Return error if index out of range
+	if index < 0 && index > len(t.List) {
+		log.Fatal("Todo not found")
+	}
+
+	// Delete list by index
+	t.List = append(t.List[:index], t.List[index+1:]...)
+
+	// Save to csv file
+	t.saveToCSV()
+
+	// Load and show updated todos
+	t.ShowTodos()
+}
+
 func closeFile(f *os.File) {
 	// Unlock the file
 	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
