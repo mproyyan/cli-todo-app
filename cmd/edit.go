@@ -41,3 +41,7 @@ var editCmd = &cobra.Command{
 		todo.EditTodo(listNumber-1, newDescription)
 	},
 }
+
+func init() {
+	rootCmd.AddCommand(editCmd)
+}
