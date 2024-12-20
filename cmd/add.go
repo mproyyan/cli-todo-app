@@ -22,3 +22,7 @@ var addCmd = &cobra.Command{
 		todo.AddTodo(todoDescription)
 	},
 }
+
+func init() {
+	rootCmd.AddCommand(addCmd)
+}
