@@ -2,12 +2,14 @@ package app
 
 import (
 	"encoding/csv"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/alexeyco/simpletable"
 	"github.com/mergestat/timediff"
 )
 
@@ -131,6 +133,49 @@ func (t *Todo) saveToCSV() {
 	}
 
 	writer.Flush()
+}
+
+func (t *Todo) ShowTodos() {
+	// Load list from csv file
+	t.LoadCSV()
+
+	// Initiate simpletable
+	table := simpletable.New()
+
+	// Create header
+	table.Header = &simpletable.Header{
+		Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: "#"},
+			{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
+			{Align: simpletable.AlignCenter, Text: "CREATED AT"},
+			{Align: simpletable.AlignCenter, Text: "STATUS"},
+		},
+	}
+
+	for i, list := range t.List {
+		// Identify todo status by 'Done' property
+		status := "Not Done"
+		if list.Done {
+			status = "Done"
+		}
+
+		// Build row
+		row := []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: strconv.Itoa(i + 1)},
+			{Text: list.Description},
+			{Text: list.FormattedTime},
+			{Align: simpletable.AlignCenter, Text: status},
+		}
+
+		// Append row
+		table.Body.Cells = append(table.Body.Cells, row)
+	}
+
+	// Set table stle
+	table.SetStyle(simpletable.StyleCompactLite)
+
+	// Print to screen
+	fmt.Println(table.String())
 }
 
 func closeFile(f *os.File) {
