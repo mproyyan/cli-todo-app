@@ -270,6 +270,59 @@ func (t *Todo) DeleteTodo(index int) {
 	t.ShowTodos()
 }
 
+func loadImportedFile(filePath string) []List {
+	// Open imported file
+	file, err := os.OpenFile(filePath, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		log.Fatal("Failed to open imported file :", err.Error())
+	}
+
+	defer file.Close()
+
+	// Create a CSV reader
+	reader := csv.NewReader(file)
+
+	// Read all rows from the CSV file
+	rows, err := reader.ReadAll()
+
+	// Parse rows into the List slice
+	var loadedList []List
+	for i, row := range rows {
+		if i == 0 {
+			// Skip header
+			continue
+		}
+
+		if len(row) < 3 {
+			// Skip rows with insufficient columns
+			continue
+		}
+
+		description := row[0]
+		createdAt, err := time.Parse("02/01/2006 15:04:05", row[1])
+		if err != nil {
+			// Return if failed to parse time
+			log.Fatal("Error parsing time :", err.Error())
+		}
+
+		done, err := strconv.ParseBool(row[2])
+		if err != nil {
+			// return if failed to parse boolean
+			log.Fatal("Error parsing boolean :", err.Error())
+		}
+
+		// Add parsed row to the loaded list
+		loadedList = append(loadedList, List{
+			Description:   description,
+			CreatedAt:     createdAt,
+			FormattedTime: timediff.TimeDiff(createdAt),
+			Done:          done,
+		})
+	}
+
+	return loadedList
+}
+
 func closeFile(f *os.File) {
 	// Unlock the file
 	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
