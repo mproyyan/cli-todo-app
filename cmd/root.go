@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -12,4 +13,11 @@ var rootCmd = cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Welcome to CLI Todo App")
 	},
+}
+
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println("Error occured :", err.Error())
+		os.Exit(1)
+	}
 }
