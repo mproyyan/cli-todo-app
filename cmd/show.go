@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var showCmd = cobra.Command{
+var showCmd = &cobra.Command{
 	Use:   "show",
 	Short: "Show todos",
 	Long:  "List all todos and print to CLI with formatted text",
@@ -16,4 +16,8 @@ var showCmd = cobra.Command{
 		// Call ShowTodos to list all todos
 		todo.ShowTodos()
 	},
+}
+
+func init() {
+	rootCmd.AddCommand(showCmd)
 }
