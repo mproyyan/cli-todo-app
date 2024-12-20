@@ -394,6 +394,19 @@ INSERT INTO todos (description, created_at, done) VALUES (
 	}
 }
 
+func (t *Todo) ExportTodos(outputPath, mode string) {
+	switch mode {
+	case "csv":
+		t.exportCSV(outputPath)
+	case "json":
+		t.exportJSON(outputPath)
+	case "sql":
+		t.exportSQL(outputPath)
+	default:
+		t.exportCSV(outputPath)
+	}
+}
+
 func loadImportedFile(filePath string) []List {
 	// Open imported file
 	file, err := os.OpenFile(filePath, os.O_RDONLY, os.ModePerm)
