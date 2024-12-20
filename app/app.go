@@ -117,6 +117,19 @@ func (t *Todo) saveToCSV() {
 	// Create a CSV writer
 	writer := csv.NewWriter(file)
 
+	// Check if the file is empty
+	fileInfo, err := file.Stat()
+	if err != nil {
+		log.Fatal("Failed to get file stat :", err.Error())
+	}
+
+	if fileInfo.Size() == 0 {
+		// If the file is empty, write the header
+		if err := writer.Write([]string{"Description", "Created At", "Done"}); err != nil {
+			log.Fatal("Failed to write header :", err.Error())
+		}
+	}
+
 	// Write each List item as a row in the CSV file
 	for _, list := range t.List {
 		// Construct row
