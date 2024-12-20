@@ -310,6 +310,35 @@ func (t *Todo) ImportTodos(filePath string, mode string) {
 	t.ShowTodos()
 }
 
+func (t *Todo) exportCSV(outputPath string) {
+	file, err := os.OpenFile(outputPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		log.Fatal("Failed to open file :", err.Error())
+	}
+
+	defer closeFile(file)
+
+	writer := csv.NewWriter(file)
+
+	if err := writer.Write([]string{"Description", "Created At", "Done"}); err != nil {
+		log.Fatal("Failed to write header :", err.Error())
+	}
+
+	for _, list := range t.List {
+		row := []string{
+			list.Description,
+			list.CreatedAt.String(),
+			strconv.FormatBool(list.Done),
+		}
+
+		if err := writer.Write(row); err != nil {
+			log.Fatal("Failed to write row to csv :", err.Error())
+		}
+	}
+
+	writer.Flush()
+}
+
 func loadImportedFile(filePath string) []List {
 	// Open imported file
 	file, err := os.OpenFile(filePath, os.O_RDONLY, os.ModePerm)
@@ -324,6 +353,9 @@ func loadImportedFile(filePath string) []List {
 
 	// Read all rows from the CSV file
 	rows, err := reader.ReadAll()
+	if err != nil {
+		log.Fatal("Error when reading file :", err.Error())
+	}
 
 	// Parse rows into the List slice
 	var loadedList []List
