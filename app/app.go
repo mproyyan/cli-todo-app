@@ -8,3 +8,7 @@ type List struct {
 	FormattedTime string
 	Done          bool
 }
+
+type Todo struct {
+	List []List
+}
