@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/csv"
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"syscall"
@@ -73,15 +73,13 @@ func (t *Todo) LoadCSV() {
 		createdAt, err := time.Parse("02/01/2006 15:04:05", row[1])
 		if err != nil {
 			// Return if failed to parse time
-			fmt.Println("Error parsing time :", err.Error())
-			return
+			log.Fatal("Error parsing time :", err.Error())
 		}
 
 		done, err := strconv.ParseBool(row[2])
 		if err != nil {
 			// return if failed to parse boolean
-			fmt.Println("Error parsing boolean :", err.Error())
-			return
+			log.Fatal("Error parsing boolean :", err.Error())
 		}
 
 		// Add parsed row to the loaded list
