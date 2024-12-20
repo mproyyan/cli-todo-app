@@ -178,6 +178,24 @@ func (t *Todo) ShowTodos() {
 	fmt.Println(table.String())
 }
 
+func (t *Todo) AddTodo(description string) {
+	// Create new list
+	newList := List{
+		Description: description,
+		CreatedAt:   time.Now(),
+		Done:        false,
+	}
+
+	// Append list
+	t.List = append(t.List, newList)
+
+	// Save updated list to csv file
+	t.saveToCSV()
+
+	// List all todos
+	t.ShowTodos()
+}
+
 func closeFile(f *os.File) {
 	// Unlock the file
 	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
