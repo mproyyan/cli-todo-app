@@ -12,3 +12,7 @@ type List struct {
 type Todo struct {
 	List []List
 }
+
+func NewTodo() *Todo {
+	return &Todo{}
+}
